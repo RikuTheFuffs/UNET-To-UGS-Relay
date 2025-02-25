@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "com.veriorpies.parrelsync": "https://github.com/VeriorPies/ParrelSync.git?path=/ParrelSync#cb1a048ea05b242f48f0bf9473b096a352192b8c",
     "com.unity.collab-proxy": "2.0.4",
     "com.unity.ide.rider": "3.0.21",
     "com.unity.ide.visualstudio": "2.0.18",

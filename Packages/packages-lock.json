@@ -96,6 +96,13 @@
         "com.unity.modules.imgui": "1.0.0"
       }
     },
+    "com.veriorpies.parrelsync": {
+      "version": "https://github.com/VeriorPies/ParrelSync.git?path=/ParrelSync#cb1a048ea05b242f48f0bf9473b096a352192b8c",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "cb1a048ea05b242f48f0bf9473b096a352192b8c"
+    },
     "com.unity.modules.ai": {
       "version": "1.0.0",
       "depth": 0,
