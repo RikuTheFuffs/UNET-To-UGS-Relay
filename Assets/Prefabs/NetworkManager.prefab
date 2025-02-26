@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 2509224485768072788}
   - component: {fileID: 2509224485768072789}
   - component: {fileID: 2509224485768072791}
+  - component: {fileID: 2496520388162354492}
   m_Layer: 0
   m_Name: NetworkManager
   m_TagString: Untagged
@@ -137,3 +138,15 @@ MonoBehaviour:
   ConnectionType: dtls
   MaxPlayers: 50
   RelayJoinCode: 
+--- !u!114 &2496520388162354492
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2509224485768072794}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8403c150261096e40b7d86f71fe51a96, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

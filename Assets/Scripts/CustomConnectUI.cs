@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Unity.Networking.Transport.Relay;
+using Unity.Samples.Multiplayer.UNET.Runtime;
 using Unity.Services.Authentication;
 using Unity.Services.Core;
 using Unity.Services.Lobbies;
@@ -115,7 +116,9 @@ public class CustomConnectUI : MonoBehaviour
         while (true)
         {
             if (m_CurrentLobby == null)
+            {
                 yield return null;
+            }
 
             try
             {
@@ -124,9 +127,13 @@ public class CustomConnectUI : MonoBehaviour
             catch (LobbyServiceException ex)
             {
                 if (ex.Reason == LobbyExceptionReason.RateLimited)
+                {
                     Debug.LogWarning($"Hit lobby heartbeat rate limit, will try again in {k_HeartbeatIntervalSeconds} seconds.");
+                }
                 else
+                {
                     Debug.LogError($"Lobby exception while sending heartbeat: {ex.Message}.");
+                }
             }
             yield return new WaitForSecondsRealtime(k_HeartbeatIntervalSeconds);
         }
@@ -134,13 +141,11 @@ public class CustomConnectUI : MonoBehaviour
 
     async void StartHostWithRelay()
     {
-        await InitializeServices();
-        if (!AuthenticationService.Instance.IsSignedIn)
-            await AuthenticationService.Instance.SignInAnonymouslyAsync();
+        await UnityServicesInitializer.Instance.Initialize(false);
         Debug.Log($"Signed in as {AuthenticationService.Instance.PlayerId}");
 
-        var allocation = await RelayService.Instance.CreateAllocationAsync(MaxPlayers - 1);
-        var joinCode = await RelayService.Instance.GetJoinCodeAsync(allocation.AllocationId);
+        Allocation allocation = await RelayService.Instance.CreateAllocationAsync(MaxPlayers - 1);
+        string joinCode = await RelayService.Instance.GetJoinCodeAsync(allocation.AllocationId);
         Debug.Log($"Created allocation {allocation.AllocationId} with join code {joinCode}");
 
         // Start hosting via the given relay allocation
@@ -156,9 +161,7 @@ public class CustomConnectUI : MonoBehaviour
 
     async void StartClientWithRelay()
     {
-        await InitializeServices();
-        if (!AuthenticationService.Instance.IsSignedIn)
-            await AuthenticationService.Instance.SignInAnonymouslyAsync();
+        await UnityServicesInitializer.Instance.Initialize(false);
         Debug.Log($"Signed in as {AuthenticationService.Instance.PlayerId}");
 
         await JoinLobbyByNameAsync(m_LobbyName);
@@ -178,25 +181,6 @@ public class CustomConnectUI : MonoBehaviour
             manager.StartClient();
 
             await UpdatePlayerAllocationId(allocation.AllocationId);
-        }
-    }
-
-    async Task InitializeServices()
-    {
-        if (Application.platform == RuntimePlatform.WindowsPlayer || Application.platform == RuntimePlatform.OSXPlayer || Application.platform == RuntimePlatform.LinuxPlayer)
-        {
-            string userprofile = "";
-            var random = new System.Random((int)System.Diagnostics.Stopwatch.GetTimestamp());
-            for (int i = 0; i < 10; ++i)
-                userprofile += (char)random.Next(65, 90);
-            Debug.Log($"Using random user profile {userprofile}");
-            var options = new InitializationOptions();
-            options.SetProfile(userprofile);
-            await UnityServices.InitializeAsync(options);
-        }
-        else
-        {
-            await UnityServices.InitializeAsync();
         }
     }
 
@@ -261,7 +245,9 @@ public class CustomConnectUI : MonoBehaviour
     public async Task SubscribeToLobbyEvents()
     {
         if (m_CurrentLobby == null || string.IsNullOrEmpty(m_CurrentLobby.Id))
+        {
             return;
+        }
         var callbacks = new LobbyEventCallbacks();
         callbacks.LobbyChanged += OnLobbyChanged;
         callbacks.KickedFromLobby += OnKickedFromLobby;
@@ -319,9 +305,7 @@ public static class AllocationUtils
         }
 
         ValidateRelayConnectionType(connectionType);
-
-        var isWebSocket = connectionType == "ws" || connectionType == "wss";
-        var endpoint = GetEndpoint(allocation.ServerEndpoints, connectionType);
+        RelayServerEndpoint endpoint = GetEndpoint(allocation.ServerEndpoints, connectionType);
 
         return new RelayServerData(
             host: endpoint.Host,
@@ -350,9 +334,7 @@ public static class AllocationUtils
         }
 
         ValidateRelayConnectionType(connectionType);
-
-        var isWebSocket = connectionType == "ws" || connectionType == "wss";
-        var endpoint = GetEndpoint(allocation.ServerEndpoints, connectionType);
+        RelayServerEndpoint endpoint = GetEndpoint(allocation.ServerEndpoints, connectionType);
 
         return new RelayServerData(
             host: endpoint.Host,
