@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &4876838641970283099
+--- !u!1 &2509224485768072794
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,9 +8,9 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 4876838641970283102}
-  - component: {fileID: 4876838641970283097}
-  - component: {fileID: 4876838641970283096}
+  - component: {fileID: 2509224485768072788}
+  - component: {fileID: 2509224485768072789}
+  - component: {fileID: 2509224485768072791}
   m_Layer: 0
   m_Name: NetworkManager
   m_TagString: Untagged
@@ -18,13 +18,13 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &4876838641970283102
+--- !u!4 &2509224485768072788
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4876838641970283099}
+  m_GameObject: {fileID: 2509224485768072794}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
@@ -32,16 +32,16 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &4876838641970283097
+--- !u!114 &2509224485768072789
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4876838641970283099}
+  m_GameObject: {fileID: 2509224485768072794}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 10c2fd873b12541b392f10ecc4846574, type: 3}
+  m_Script: {fileID: 11500000, guid: 2746480bbc3ec884895fef6efb26b88f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_NetworkPort: 7777
@@ -53,16 +53,19 @@ MonoBehaviour:
   m_ScriptCRCCheck: 1
   m_MaxDelay: 0.01
   m_LogLevel: 2
-  m_PlayerPrefab: {fileID: 7932745444661954771, guid: e5c274c9d28ffa64da09a7f5ac73e493, type: 3}
+  m_PlayerPrefab: {fileID: 100000, guid: c2549a141109b1c49b41b054580f950e, type: 3}
   m_AutoCreatePlayer: 1
   m_PlayerSpawnMethod: 0
   m_OfflineScene: OfflineScene
   m_OnlineScene: OnlineScene
-  m_SpawnPrefabs: []
+  m_SpawnPrefabs:
+  - {fileID: 100000, guid: f7120fa7a008f8d4fa6c6bb280d092ad, type: 3}
+  - {fileID: 100000, guid: d23f28732e2924c4180c8fec40c78dfc, type: 3}
+  - {fileID: 100000, guid: 7ab4780606df6934f9810adaf781b34a, type: 3}
   m_CustomConfig: 0
   m_MaxConnections: 4
   m_ConnectionConfig:
-    m_PacketSize: 1440
+    m_PacketSize: 1500
     m_FragmentSize: 500
     m_ResendTimeout: 1200
     m_DisconnectTimeout: 2000
@@ -78,7 +81,7 @@ MonoBehaviour:
     m_SendDelay: 10
     m_MaxCombinedReliableMessageSize: 100
     m_MaxCombinedReliableMessageCount: 10
-    m_MaxSentMessageQueueSize: 512
+    m_MaxSentMessageQueueSize: 128
     m_AcksType: 1
     m_UsePlatformSpecificProtocols: 0
     m_InitialBandwidth: 0
@@ -101,7 +104,7 @@ MonoBehaviour:
     m_MaxTimerTimeout: 12000
     m_MinNetSimulatorTimeout: 1
     m_MaxNetSimulatorTimeout: 12000
-  m_Channels: 
+  m_Channels: 0500000000000000
   m_UseWebSockets: 0
   m_UseSimulator: 0
   m_SimulatedLatency: 1
@@ -114,19 +117,23 @@ MonoBehaviour:
   matchSize: 4
   isNetworkActive: 0
   matchMaker: {fileID: 0}
---- !u!114 &4876838641970283096
+  bulletPrefab: {fileID: 100000, guid: f7120fa7a008f8d4fa6c6bb280d092ad, type: 3}
+  BulletsInPool: 50
+  BulletsToStart: 5
+  bullets: []
+--- !u!114 &2509224485768072791
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4876838641970283099}
+  m_GameObject: {fileID: 2509224485768072794}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4394a3eef724546f896557197e2d6c44, type: 3}
+  m_Script: {fileID: 11500000, guid: 178bdb5cdcc174ab8a983797f6fecbb3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   manager: {fileID: 0}
-  showGUI: 1
-  offsetX: 0
-  offsetY: 0
+  ConnectionType: dtls
+  MaxPlayers: 50
+  RelayJoinCode: 
