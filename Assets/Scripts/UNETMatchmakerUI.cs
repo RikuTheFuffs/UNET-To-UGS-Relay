@@ -10,10 +10,10 @@ public class UNETMatchmakerUI : MonoBehaviour
     NetworkManager m_NetworkManager;
 
     [SerializeField]
-    Button m_ButtonCreateMatchmakerSession;
+    Button m_ButtonCreateMatch;
 
     [SerializeField]
-    Button m_ButtonListMatchmakerSessions;
+    Button m_ButtonListMatches;
 
     [SerializeField]
     RectTransform m_MatchesList;
@@ -23,11 +23,11 @@ public class UNETMatchmakerUI : MonoBehaviour
 
     void OnEnable()
     {
-        m_ButtonCreateMatchmakerSession.onClick.RemoveAllListeners();
-        m_ButtonCreateMatchmakerSession.onClick.AddListener(OnClickCreateMatchmakerSession);
+        m_ButtonCreateMatch.onClick.RemoveAllListeners();
+        m_ButtonCreateMatch.onClick.AddListener(OnClickCreateMatch);
 
-        m_ButtonListMatchmakerSessions.onClick.RemoveAllListeners();
-        m_ButtonListMatchmakerSessions.onClick.AddListener(OnClickListMatchmakerSessions);
+        m_ButtonListMatches.onClick.RemoveAllListeners();
+        m_ButtonListMatches.onClick.AddListener(OnClickListMatches);
     }
 
     void InitializeMatchmaker()
@@ -39,9 +39,9 @@ public class UNETMatchmakerUI : MonoBehaviour
         m_NetworkManager.StartMatchMaker();
     }
 
-    void OnClickCreateMatchmakerSession()
+    void OnClickCreateMatch()
     {
-        Debug.Log($"OnClickCreateMatchmakerSession");
+        Debug.Log($"OnClickCreateMatch");
         InitializeMatchmaker();
         m_NetworkManager.matchMaker.CreateMatch(
                     matchName: "My Match Name",
@@ -60,9 +60,9 @@ public class UNETMatchmakerUI : MonoBehaviour
         Debug.Log($"Match created: {success}; ExtendedInfo: {extendedInfo} | Response data: {responseData}");
     }
 
-    void OnClickListMatchmakerSessions()
+    void OnClickListMatches()
     {
-        Debug.Log($"OnClickListMatchmakerSessions");
+        Debug.Log($"OnClickListMatches");
         InitializeMatchmaker();
         m_NetworkManager.matchMaker.ListMatches(
             startPageNumber: 0,
@@ -71,12 +71,12 @@ public class UNETMatchmakerUI : MonoBehaviour
             filterOutPrivateMatchesFromResults: false,
             eloScoreTarget: 0,
             requestDomain: 0,
-            callback: OnSessionsListRetrieved);
+            callback: OnMatchesListRetrieved);
     }
 
-    void OnSessionsListRetrieved(bool success, string extendedInfo, List<MatchInfoSnapshot> responseData)
+    void OnMatchesListRetrieved(bool success, string extendedInfo, List<MatchInfoSnapshot> responseData)
     {
-        Debug.Log($"OnSessionsListRetrieved: {success}; ExtendedInfo: {extendedInfo} | Response data: found {responseData.Count} matches");
+        Debug.Log($"OnMatchesListRetrieved: {success}; ExtendedInfo: {extendedInfo} | Response data: found {responseData.Count} matches");
         for (int i = m_MatchesList.transform.childCount - 1; i >= 0; i--)
         {
             Destroy(m_MatchesList.transform.GetChild(i).gameObject);

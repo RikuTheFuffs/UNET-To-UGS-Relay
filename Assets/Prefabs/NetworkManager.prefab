@@ -289,7 +289,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: List MM sessions
+  m_text: List Matches
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -525,7 +525,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Create MM session
+  m_text: Create Match
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -1146,7 +1146,7 @@ GameObject:
   - component: {fileID: 428811921700369591}
   - component: {fileID: 2308689320654322909}
   m_Layer: 5
-  m_Name: buttonListMatchmakerSessions
+  m_Name: buttonListMatches
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1435,8 +1435,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_NetworkManager: {fileID: 4876838641970283097}
-  m_ButtonCreateMatchmakerSession: {fileID: 2850443847527217429}
-  m_ButtonListMatchmakerSessions: {fileID: 2308689320654322909}
+  m_ButtonCreateMatch: {fileID: 2850443847527217429}
+  m_ButtonListMatches: {fileID: 2308689320654322909}
   m_MatchesList: {fileID: 2398142251590288908}
   m_MatchUIPrefab: {fileID: 5249296786343979758, guid: 7b1eeca5ae3ec8a4bb460c4e1feb6767, type: 3}
 --- !u!1 &7367595915152235719
@@ -1452,7 +1452,7 @@ GameObject:
   - component: {fileID: 1292648689674385074}
   - component: {fileID: 2850443847527217429}
   m_Layer: 5
-  m_Name: buttonCreateMatchmakerSession
+  m_Name: buttonCreateMatch
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
