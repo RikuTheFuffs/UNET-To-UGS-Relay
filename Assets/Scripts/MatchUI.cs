@@ -14,6 +14,9 @@ public class MatchUI : MonoBehaviour
     [SerializeField]
     Button m_ButtonDelete;
 
+    [SerializeField]
+    Button m_ButtonToggleVisbility;
+
     MatchInfoSnapshot m_MatchInfoSnapshot;
     NetworkMatch m_Matchmaker;
 
@@ -27,6 +30,9 @@ public class MatchUI : MonoBehaviour
 
         m_ButtonDelete.onClick.RemoveAllListeners();
         m_ButtonDelete.onClick.AddListener(OnClickDeleteMatch);
+
+        m_ButtonToggleVisbility.onClick.RemoveAllListeners();
+        m_ButtonToggleVisbility.onClick.AddListener(OnClickToggleMatchVisibility);
     }
 
     void OnClickJoinMatch()
@@ -61,5 +67,21 @@ public class MatchUI : MonoBehaviour
         {
             Destroy(gameObject);
         }
+    }
+
+    void OnClickToggleMatchVisibility()
+    {
+        m_Matchmaker.SetMatchAttributes
+        (
+            networkId: m_MatchInfoSnapshot.networkId,
+            isListed: m_MatchInfoSnapshot.isPrivate,
+            requestDomain: 0,
+            callback: OnMatchVisibilityToggled
+        );
+    }
+
+    void OnMatchVisibilityToggled(bool success, string extendedInfo)
+    {
+        Debug.Log($"OnMatchVisibilityToggled: {success}; ExtendedInfo: {extendedInfo}");
     }
 }
