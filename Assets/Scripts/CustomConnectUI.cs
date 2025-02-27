@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using Unity.Networking.Transport.Relay;
 using Unity.Samples.Multiplayer.UNET.Runtime;
 using Unity.Services.Authentication;
-using Unity.Services.Core;
 using Unity.Services.Lobbies;
 using Unity.Services.Lobbies.Models;
 using Unity.Services.Relay;
@@ -23,29 +22,33 @@ public class CustomConnectUI : MonoBehaviour
         public const string RelayHost = "relay.host";
     }
 
-    public NetworkManager manager;
-
-    public string ConnectionType = "dtls";
-    public int MaxPlayers = 50;
-    public string RelayJoinCode;
-
     const int k_HeartbeatIntervalSeconds = 10;
+
+    [SerializeField]
+    string m_ConnectionType = "dtls";
+
+    [SerializeField]
+    int m_MaxPlayers = 50;
+
+    [SerializeField]
+    string m_RelayJoinCode;
 
     Lobby m_CurrentLobby;
     string m_LobbyName = "2dshooter";
+    NetworkManager m_Manager;
     Coroutine m_Heartbeat;
 
     void Awake()
     {
-        manager = GetComponent<NetworkManager>();
+        m_Manager = GetComponent<NetworkManager>();
     }
 
     void OnGUI()
     {
-        bool noConnection = (manager.client == null || manager.client.connection == null ||
-            manager.client.connection.connectionId == -1);
+        bool noConnection = (m_Manager.client == null || m_Manager.client.connection == null ||
+            m_Manager.client.connection.connectionId == -1);
 
-        if (!manager.IsClientConnected() && !NetworkServer.active)
+        if (!m_Manager.IsClientConnected() && !NetworkServer.active)
         {
             if (noConnection)
             {
@@ -58,18 +61,18 @@ public class CustomConnectUI : MonoBehaviour
                     StartClientWithRelay();
                 }
 
-                manager.networkAddress = GUILayout.TextField(manager.networkAddress);
+                m_Manager.networkAddress = GUILayout.TextField(m_Manager.networkAddress);
                 if (GUILayout.Button("LAN Server Only(S)"))
                 {
-                    manager.StartServer();
+                    m_Manager.StartServer();
                 }
             }
             else
             {
-                GUILayout.Label("Connecting to " + manager.networkAddress + ":" + manager.networkPort + "..");
+                GUILayout.Label("Connecting to " + m_Manager.networkAddress + ":" + m_Manager.networkPort + "..");
                 if (GUILayout.Button("Cancel Connection Attempt"))
                 {
-                    manager.StopClient();
+                    m_Manager.StopClient();
                 }
             }
         }
@@ -77,24 +80,24 @@ public class CustomConnectUI : MonoBehaviour
         {
             if (NetworkServer.active)
             {
-                string serverMsg = "Server: port=" + manager.networkPort;
-                if (manager.useWebSockets)
+                string serverMsg = "Server: port=" + m_Manager.networkPort;
+                if (m_Manager.useWebSockets)
                 {
                     serverMsg += " (Using WebSockets)";
                 }
                 GUILayout.Label(serverMsg);
             }
-            if (manager.IsClientConnected())
+            if (m_Manager.IsClientConnected())
             {
-                GUILayout.Label("Client: address=" + manager.networkAddress + " port=" + manager.networkPort);
+                GUILayout.Label("Client: address=" + m_Manager.networkAddress + " port=" + m_Manager.networkPort);
             }
         }
 
-        if (manager.IsClientConnected() && !ClientScene.ready)
+        if (m_Manager.IsClientConnected() && !ClientScene.ready)
         {
             if (GUILayout.Button("Client Ready"))
             {
-                ClientScene.Ready(manager.client.connection);
+                ClientScene.Ready(m_Manager.client.connection);
 
                 if (ClientScene.localPlayers.Count == 0)
                 {
@@ -102,11 +105,11 @@ public class CustomConnectUI : MonoBehaviour
                 }
             }
         }
-        if (NetworkServer.active || manager.IsClientConnected())
+        if (NetworkServer.active || m_Manager.IsClientConnected())
         {
             if (GUILayout.Button("Stop (X)"))
             {
-                manager.StopHost();
+                m_Manager.StopHost();
             }
         }
     }
@@ -144,15 +147,15 @@ public class CustomConnectUI : MonoBehaviour
         await UnityServicesInitializer.Instance.Initialize(false);
         Debug.Log($"Signed in as {AuthenticationService.Instance.PlayerId}");
 
-        Allocation allocation = await RelayService.Instance.CreateAllocationAsync(MaxPlayers - 1);
+        Allocation allocation = await RelayService.Instance.CreateAllocationAsync(m_MaxPlayers - 1);
         string joinCode = await RelayService.Instance.GetJoinCodeAsync(allocation.AllocationId);
         Debug.Log($"Created allocation {allocation.AllocationId} with join code {joinCode}");
 
         // Start hosting via the given relay allocation
         var unityTransport = (UnityTransport)NetworkManager.activeTransport;
         unityTransport.UseRelay = true;
-        unityTransport.RelayServerData = allocation.ToRelayServerData(ConnectionType);
-        manager.StartHost();
+        unityTransport.RelayServerData = allocation.ToRelayServerData(m_ConnectionType);
+        m_Manager.StartHost();
 
         Debug.Log($"Creating lobby with name {m_LobbyName}");
         await CreateLobbyAsync(joinCode, allocation.AllocationId.ToString());
@@ -171,14 +174,14 @@ public class CustomConnectUI : MonoBehaviour
         {
             var relayJoinCode = m_CurrentLobby.Data[LobbyKeys.RelayJoinCode].Value;
             Debug.Log($"Using relay join code {relayJoinCode} from lobby data");
-            RelayJoinCode = relayJoinCode;
+            m_RelayJoinCode = relayJoinCode;
             var allocation = await RelayService.Instance.JoinAllocationAsync(relayJoinCode);
 
             // Start hosting via the given relay allocation
             var unityTransport = (UnityTransport)NetworkManager.activeTransport;
             unityTransport.UseRelay = true;
-            unityTransport.RelayServerData = allocation.ToRelayServerData(ConnectionType);
-            manager.StartClient();
+            unityTransport.RelayServerData = allocation.ToRelayServerData(m_ConnectionType);
+            m_Manager.StartClient();
 
             await UpdatePlayerAllocationId(allocation.AllocationId);
         }
@@ -186,7 +189,7 @@ public class CustomConnectUI : MonoBehaviour
 
     public async Task CreateLobbyAsync(string joinCode, string allocationId)
     {
-        RelayJoinCode = joinCode;
+        m_RelayJoinCode = joinCode;
         var playerId = AuthenticationService.Instance.PlayerId;
 
         CreateLobbyOptions options = new CreateLobbyOptions();
@@ -197,7 +200,7 @@ public class CustomConnectUI : MonoBehaviour
         };
         options.Player = new Player(id: playerId, allocationId: allocationId);
 
-        m_CurrentLobby = await LobbyService.Instance.CreateLobbyAsync(m_LobbyName, MaxPlayers, options);
+        m_CurrentLobby = await LobbyService.Instance.CreateLobbyAsync(m_LobbyName, m_MaxPlayers, options);
         Debug.Log($"Created lobby {m_CurrentLobby.Id} with name '{m_LobbyName}'");
 
         // Host is responsible for heartbeating the lobby to keep it alive
