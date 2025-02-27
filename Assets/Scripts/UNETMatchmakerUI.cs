@@ -7,37 +7,43 @@ using UnityEngine.UI;
 public class UNETMatchmakerUI : MonoBehaviour
 {
     [SerializeField]
-    NetworkManager networkManager;
+    NetworkManager m_NetworkManager;
 
     [SerializeField]
-    Button buttonCreateMatchmakerSession;
+    Button m_ButtonCreateMatchmakerSession;
 
     [SerializeField]
-    Button buttonListMatchmakerSessions;
+    Button m_ButtonListMatchmakerSessions;
+
+    [SerializeField]
+    RectTransform m_MatchesList;
+
+    [SerializeField]
+    MatchUI m_MatchUIPrefab;
 
     void OnEnable()
     {
-        buttonCreateMatchmakerSession.onClick.RemoveAllListeners();
-        buttonCreateMatchmakerSession.onClick.AddListener(OnClickCreateMatchmakerSession);
+        m_ButtonCreateMatchmakerSession.onClick.RemoveAllListeners();
+        m_ButtonCreateMatchmakerSession.onClick.AddListener(OnClickCreateMatchmakerSession);
 
-        buttonListMatchmakerSessions.onClick.RemoveAllListeners();
-        buttonListMatchmakerSessions.onClick.AddListener(OnClickListMatchmakerSessions);
+        m_ButtonListMatchmakerSessions.onClick.RemoveAllListeners();
+        m_ButtonListMatchmakerSessions.onClick.AddListener(OnClickListMatchmakerSessions);
     }
 
     void InitializeMatchmaker()
     {
-        if (networkManager.matchMaker)
+        if (m_NetworkManager.matchMaker)
         {
             return;
         }
-        networkManager.StartMatchMaker();
+        m_NetworkManager.StartMatchMaker();
     }
 
     void OnClickCreateMatchmakerSession()
     {
         Debug.Log($"OnClickCreateMatchmakerSession");
         InitializeMatchmaker();
-        networkManager.matchMaker.CreateMatch(
+        m_NetworkManager.matchMaker.CreateMatch(
                     matchName: "My Match Name",
                     matchSize: 16,
                     matchAdvertise: true,
@@ -58,7 +64,7 @@ public class UNETMatchmakerUI : MonoBehaviour
     {
         Debug.Log($"OnClickListMatchmakerSessions");
         InitializeMatchmaker();
-        networkManager.matchMaker.ListMatches(
+        m_NetworkManager.matchMaker.ListMatches(
             startPageNumber: 0,
             resultPageSize: 20,
             matchNameFilter: "",
@@ -71,5 +77,15 @@ public class UNETMatchmakerUI : MonoBehaviour
     void OnSessionsListRetrieved(bool success, string extendedInfo, List<MatchInfoSnapshot> responseData)
     {
         Debug.Log($"OnSessionsListRetrieved: {success}; ExtendedInfo: {extendedInfo} | Response data: found {responseData.Count} matches");
+        for (int i = m_MatchesList.transform.childCount - 1; i >= 0; i--)
+        {
+            Destroy(m_MatchesList.transform.GetChild(i).gameObject);
+        }
+
+        foreach (var item in responseData)
+        {
+            MatchUI matchUIInstance = Instantiate(m_MatchUIPrefab, m_MatchesList);
+            matchUIInstance.Initialize(m_NetworkManager.matchMaker, item);
+        }
     }
 }
