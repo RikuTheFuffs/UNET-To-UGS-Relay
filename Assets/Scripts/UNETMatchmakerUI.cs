@@ -6,6 +6,8 @@ using UnityEngine.UI;
 
 public class UNETMatchmakerUI : MonoBehaviour
 {
+    public static MatchInfo s_CurrentMatch;
+
     [SerializeField]
     NetworkManager m_NetworkManager;
 
@@ -14,6 +16,9 @@ public class UNETMatchmakerUI : MonoBehaviour
 
     [SerializeField]
     Button m_ButtonListMatches;
+
+    [SerializeField]
+    Button m_ButtonLeaveCurrentMatche;
 
     [SerializeField]
     RectTransform m_MatchesList;
@@ -28,6 +33,9 @@ public class UNETMatchmakerUI : MonoBehaviour
 
         m_ButtonListMatches.onClick.RemoveAllListeners();
         m_ButtonListMatches.onClick.AddListener(OnClickListMatches);
+
+        m_ButtonLeaveCurrentMatche.onClick.RemoveAllListeners();
+        m_ButtonLeaveCurrentMatche.onClick.AddListener(OnClickLeaveCurrentMatch);
     }
 
     void InitializeMatchmaker()
@@ -87,5 +95,25 @@ public class UNETMatchmakerUI : MonoBehaviour
             MatchUI matchUIInstance = Instantiate(m_MatchUIPrefab, m_MatchesList);
             matchUIInstance.Initialize(m_NetworkManager.matchMaker, item);
         }
+    }
+
+    void OnClickLeaveCurrentMatch()
+    {
+        Debug.Log($"OnClickLeaveCurrentMatch");
+        InitializeMatchmaker();
+        if (s_CurrentMatch == null)
+        {
+            Debug.LogError("Can't leave match as I'm not in a match.");
+            return;
+        }
+        m_NetworkManager.matchMaker.DropConnection(netId: s_CurrentMatch.networkId,
+            dropNodeId: s_CurrentMatch.nodeId,
+            requestDomain: s_CurrentMatch.domain,
+            callback: OnCurrentMatchLeft);
+    }
+
+    void OnCurrentMatchLeft(bool success, string extendedInfo)
+    {
+        Debug.Log($"OnCurrentMatchLeft: {success}; ExtendedInfo: {extendedInfo}");
     }
 }

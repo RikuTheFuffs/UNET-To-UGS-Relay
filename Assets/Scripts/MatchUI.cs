@@ -50,6 +50,10 @@ public class MatchUI : MonoBehaviour
     void OnMatchJoined(bool success, string extendedInfo, MatchInfo responseData)
     {
         Debug.Log($"OnMatchJoined: {success}; ExtendedInfo: {extendedInfo} | Response data: IP: {responseData.address}");
+        if (success)
+        {
+           UNETMatchmakerUI.s_CurrentMatch = responseData;
+        }
     }
 
     void OnClickDeleteMatch()
