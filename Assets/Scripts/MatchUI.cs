@@ -11,6 +11,9 @@ public class MatchUI : MonoBehaviour
     [SerializeField]
     Button m_ButtonJoin;
 
+    [SerializeField]
+    Button m_ButtonDelete;
+
     MatchInfoSnapshot m_MatchInfoSnapshot;
     NetworkMatch m_Matchmaker;
 
@@ -21,6 +24,9 @@ public class MatchUI : MonoBehaviour
         m_LabelInfo.text = $"Name: '{matchInfoSnapshot.name}' | Players: {matchInfoSnapshot.currentSize}/{matchInfoSnapshot.maxSize}";
         m_ButtonJoin.onClick.RemoveAllListeners();
         m_ButtonJoin.onClick.AddListener(OnClickJoinMatch);
+
+        m_ButtonDelete.onClick.RemoveAllListeners();
+        m_ButtonDelete.onClick.AddListener(OnClickDeleteMatch);
     }
 
     void OnClickJoinMatch()
@@ -38,5 +44,22 @@ public class MatchUI : MonoBehaviour
     void OnMatchJoined(bool success, string extendedInfo, MatchInfo responseData)
     {
         Debug.Log($"OnMatchJoined: {success}; ExtendedInfo: {extendedInfo} | Response data: IP: {responseData.address}");
+    }
+
+    void OnClickDeleteMatch()
+    {
+        m_Matchmaker.DestroyMatch(netId: m_MatchInfoSnapshot.networkId,
+            requestDomain: 0,
+            callback: OnMatchDeleted
+        );
+    }
+
+    void OnMatchDeleted(bool success, string extendedInfo)
+    {
+        Debug.Log($"OnMatchDeleted: {success}; ExtendedInfo: {extendedInfo}");
+        if (success)
+        {
+            Destroy(gameObject);
+        }
     }
 }
