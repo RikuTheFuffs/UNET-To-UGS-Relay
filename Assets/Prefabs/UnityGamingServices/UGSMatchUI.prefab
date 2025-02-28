@@ -65,7 +65,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Hide / show
+  m_text: Edit
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -92,7 +92,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 29.45
+  m_fontSize: 48.3
   m_fontSizeBase: 24
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -528,7 +528,7 @@ MonoBehaviour:
   m_LabelInfo: {fileID: 681977144796040232}
   m_ButtonJoin: {fileID: 6299416179444136997}
   m_ButtonDelete: {fileID: 3747283841114156953}
-  m_ButtonToggleVisbility: {fileID: 6488270980836413614}
+  m_ButtonEditLobby: {fileID: 6488270980836413614}
 --- !u!1 &4747615631978876984
 GameObject:
   m_ObjectHideFlags: 0
@@ -676,7 +676,7 @@ GameObject:
   - component: {fileID: 4162311511188477705}
   - component: {fileID: 6488270980836413614}
   m_Layer: 5
-  m_Name: buttonToggleVisibility
+  m_Name: buttonEditLobby
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

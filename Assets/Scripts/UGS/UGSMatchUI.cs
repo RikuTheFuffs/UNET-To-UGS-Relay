@@ -1,7 +1,10 @@
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using TMPro;
+using Unity.Services.Authentication;
+using Unity.Services.Lobbies;
 using Unity.Services.Lobbies.Models;
 using UnityEngine;
-using UnityEngine.Networking.Match;
 using UnityEngine.UI;
 
 public class UGSMatchUI : MonoBehaviour
@@ -16,7 +19,7 @@ public class UGSMatchUI : MonoBehaviour
     Button m_ButtonDelete;
 
     [SerializeField]
-    Button m_ButtonToggleVisbility;
+    Button m_ButtonEditLobby;
 
     Lobby m_MatchInfo;
 
@@ -30,61 +33,127 @@ public class UGSMatchUI : MonoBehaviour
         m_ButtonDelete.onClick.RemoveAllListeners();
         m_ButtonDelete.onClick.AddListener(OnClickDeleteMatch);
 
-        m_ButtonToggleVisbility.onClick.RemoveAllListeners();
-        m_ButtonToggleVisbility.onClick.AddListener(OnClickToggleMatchVisibility);
+        m_ButtonEditLobby.onClick.RemoveAllListeners();
+        m_ButtonEditLobby.onClick.AddListener(OnClickRenameLobby);
     }
 
     void OnClickJoinMatch()
     {
-        //m_Matchmaker.JoinMatch(netId: m_MatchInfoSnapshot.networkId,
-        //    matchPassword: "Password",
-        //    publicClientAddress: "",
-        //    privateClientAddress: "",
-        //    eloScoreForClient: 0,
-        //    requestDomain: 0,
-        //    callback: OnMatchJoined
-        //);
+        JoinMatch();
     }
 
-    void OnMatchJoined(bool success, string extendedInfo, MatchInfo responseData)
+    async Task JoinMatch()
     {
-        Debug.Log($"OnMatchJoined: {success}; ExtendedInfo: {extendedInfo} | Response data: IP: {responseData.address}");
-        if (success)
+        var player = new Player(
+            id: AuthenticationService.Instance.PlayerId,
+            connectionInfo: "MyWanIp",
+            data: new Dictionary<string, PlayerDataObject>()
+            {
+                ["EloScore"] = new PlayerDataObject(
+                    visibility: PlayerDataObject.VisibilityOptions.Public,
+                    value: "123")
+            });
+
+        /* Using the JoinLobbyByCodeAsync API
+        Lobby joinedLobbyByCode = await Lobbies.Instance.JoinLobbyByCodeAsync(
+            lobbyCode: "myLobbyCode",
+            options: new JoinLobbyByCodeOptions()
+            {
+                Player = player
+            });
+        */
+
+        // Using the JoinLobbyByIdAsync API
+        m_MatchInfo = await Lobbies.Instance.JoinLobbyByIdAsync(
+            lobbyId: m_MatchInfo.Id,
+            options: new JoinLobbyByIdOptions()
+            {
+                Player = player
+            });
+
+        /* Using the QuickJoinLobbyAsync API
+        var queryFilters = new List<QueryFilter>
         {
-           //UNETMatchmakerUI.s_CurrentMatch = responseData;
-        }
+                // Search for games with domain = a specific value
+                new QueryFilter(
+                    field: QueryFilter.FieldOptions.S1,
+                    op: QueryFilter.OpOptions.EQ,
+                    value: "MyDomain"),
+                };
+
+        var options = new QuickJoinLobbyOptions()
+        {
+            Filter = queryFilters,
+            Player = player
+        };
+
+        Lobby joinedLobby = await Lobbies.Instance.QuickJoinLobbyAsync(options);
+        */
+        OnMatchJoined(m_MatchInfo);
+    }
+
+    void OnMatchJoined(Lobby lobby)
+    {
+        Debug.Log($"OnMatchJoined: {lobby.Id}");
+        UGSLobbyAndRelayUI.s_CurrentMatch = lobby;
     }
 
     void OnClickDeleteMatch()
     {
-        //m_Matchmaker.DestroyMatch(netId: m_MatchInfoSnapshot.networkId,
-        //    requestDomain: 0,
-        //    callback: OnMatchDeleted
-        //);
+        DeleteMatch();
     }
 
-    void OnMatchDeleted(bool success, string extendedInfo)
+    async Task DeleteMatch()
     {
-        Debug.Log($"OnMatchDeleted: {success}; ExtendedInfo: {extendedInfo}");
-        if (success)
+        await Lobbies.Instance.DeleteLobbyAsync(m_MatchInfo.Id);
+        OnMatchDeleted();
+    }
+
+    void OnMatchDeleted()
+    {
+        Debug.Log($"OnMatchDeleted");
+        Destroy(gameObject);
+    }
+
+    void OnClickRenameLobby()
+    {
+        RenameLobby();
+    }
+
+    async Task RenameLobby()
+    {
+        // Lobby custom data
+        var lobbyData = new Dictionary<string, DataObject>()
         {
-            Destroy(gameObject);
+            ["AverageEloScore"] = new DataObject(
+                visibility: DataObject.VisibilityOptions.Public,
+                value: "123"),
+        };
+
+        try
+        {
+            var updatedOptions = new UpdateLobbyOptions()
+            {
+                Data = lobbyData,
+                HostId = AuthenticationService.Instance.PlayerId,
+                MaxPlayers = 8,
+                Name = "new lobby name"
+            };
+
+            // Update lobby custom data and metadata
+            m_MatchInfo = await Lobbies.Instance.UpdateLobbyAsync(m_MatchInfo.Id, updatedOptions);
         }
+        catch (System.Exception e)
+        {
+            Debug.LogError(e);
+        }
+        OnMatchVisibilityToggled(m_MatchInfo);
     }
 
-    void OnClickToggleMatchVisibility()
+    void OnMatchVisibilityToggled(Lobby match)
     {
-        //m_Matchmaker.SetMatchAttributes
-        //(
-        //    networkId: m_MatchInfoSnapshot.networkId,
-        //    isListed: m_MatchInfoSnapshot.isPrivate,
-        //    requestDomain: 0,
-        //    callback: OnMatchVisibilityToggled
-        //);
-    }
+        Debug.Log($"OnMatchVisibilityToggled: Private: {match.IsPrivate}");
+        m_LabelInfo.text = $"Name: '{match.Name}' | Players: {match.Players.Count}/{match.MaxPlayers}";
 
-    void OnMatchVisibilityToggled(bool success, string extendedInfo)
-    {
-        Debug.Log($"OnMatchVisibilityToggled: {success}; ExtendedInfo: {extendedInfo}");
     }
 }

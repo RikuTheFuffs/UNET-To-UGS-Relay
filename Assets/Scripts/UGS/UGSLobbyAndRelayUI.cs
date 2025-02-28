@@ -15,7 +15,7 @@ using System.Collections;
 
 public class UGSLobbyAndRelayUI : MonoBehaviour
 {
-    //public static MatchInfo s_CurrentMatch;
+    public static Lobby s_CurrentMatch;
     const int k_HeartbeatIntervalSeconds = 10;
 
     [SerializeField]
@@ -192,7 +192,6 @@ public class UGSLobbyAndRelayUI : MonoBehaviour
             Skip = 0
         });
 
-        Debug.Log($"Found lobbies!");
         List<Lobby> foundLobbies = response.Results;
         OnMatchesListRetrieved(foundLobbies);
     }
